@@ -27,24 +27,28 @@ const App: React.FC = () => {
 
   const handleGuess = (guess: 'higher' | 'lower') => {
     if (!currentCharacter || !nextCharacter) return;
-
-    const isCorrect =
-      guess === 'higher'
-        ? nextCharacter.bounties[0]! > currentCharacter.bounties[0]!
-        : nextCharacter.bounties[0]! < currentCharacter.bounties[0]!;
-
-    if (isCorrect) {
+  
+    const currentBounty = currentCharacter.bounties[0];
+    const nextBounty = nextCharacter.bounties[0];
+  
+    if (currentBounty === nextBounty) {
       setScore(score + 1);
       moveToNextCharacter();
     } else {
-      setIsGameOver(true);
-      if (score > highestScore) {
-        setHighestScore(score);
-        localStorage.setItem('highestScore', score.toString());
+      const isCorrect =
+        guess === 'higher'
+          ? nextBounty! > currentBounty!
+          : nextBounty! < currentBounty!;
+  
+      if (isCorrect) {
+        setScore(score + 1);
+        moveToNextCharacter();
+      } else {
+        setIsGameOver(true);
       }
     }
   };
-
+  
   const moveToNextCharacter = () => {
     if (!nextCharacter) return;
     const newIndex = characters.indexOf(nextCharacter) + 1;

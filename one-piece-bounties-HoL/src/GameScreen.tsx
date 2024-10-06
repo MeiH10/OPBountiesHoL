@@ -27,7 +27,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ currentCharacter, nextCharacter
   };
 
   return (
-    <div className="relative flex flex-col md:flex-row h-screen overflow-hidden">
+    <div className="relative flex flex-col md:flex-row h-screen overflow-hidden full-height">
       <div className={`w-full md:w-1/2 h-1/2 md:h-full flex justify-center items-center ${fadeOut ? 'animate-fadeOut' : ''}`}>
         <CharacterCard character={currentCharacter} showBounty={true} />
       </div>
