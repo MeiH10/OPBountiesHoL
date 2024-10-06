@@ -14,9 +14,10 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const savedHighestScore = localStorage.getItem('highestScore');
-    if (savedHighestScore) {
-      setHighestScore(parseInt(savedHighestScore, 10));
+    if (!savedHighestScore) {
+      localStorage.setItem('highestScore', '0');
     }
+    setHighestScore(parseInt(savedHighestScore || '0', 10));
     
     const filteredCharacters = characterData.filter(character => character.bounties && character.bounties[0] !== null);
     const shuffledCharacters = shuffleCharacters([...filteredCharacters]);
@@ -61,7 +62,13 @@ const App: React.FC = () => {
     }
   };
 
+
   const resetGame = () => {
+    if (score > highestScore) {
+      setHighestScore(score);
+      localStorage.setItem('highestScore', score.toString());
+    }
+  
     const filteredCharacters = characterData.filter(character => character.bounties && character.bounties[0] !== null);
     const shuffledCharacters = shuffleCharacters([...filteredCharacters]);
     setCharacters(shuffledCharacters);
@@ -70,7 +77,7 @@ const App: React.FC = () => {
     setScore(0);
     setIsGameOver(false);
   };
-
+  
   if (isGameOver) {
     return <GameOverScreen score={score} onRestart={resetGame} />;
   }
