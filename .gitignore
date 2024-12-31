@@ -131,3 +131,4 @@ dist
 /python_scripts
 one-piece-bounties-HoL/src/userful_scripts/compress.py
 .DS_Store
+*.js
