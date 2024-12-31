@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const HowToPlay = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,7 +24,10 @@ const HowToPlay = () => {
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={() => setIsOpen(false)}
+        >
           <div 
             className="bg-gray-800 rounded-lg p-6 max-w-md w-full relative"
             onClick={e => e.stopPropagation()}
