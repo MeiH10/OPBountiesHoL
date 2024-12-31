@@ -114,7 +114,7 @@
         "bounties": [
             1390000000
         ],
-        "image_url": "https://i.ibb.co/WBn7N4x/King-Anime-Infobox.png"
+        "image_url": "https://i.ibb.co/26qypDt/king-arber.jpg"
     },
     {
         "name": "Marco",
@@ -128,7 +128,7 @@
         "bounties": [
             1320000000
         ],
-        "image_url": "https://i.ibb.co/zGCCkY5/Queen-Anime-Infobox.png"
+        "image_url": "https://i.ibb.co/XZr3tvt/queen-scien.jpg"
     },
     {
         "name": "Roronoa Zoro",
@@ -165,7 +165,7 @@
             177000000,
             77000000
         ],
-        "image_url": "https://i.ibb.co/7R3yyKH/Sanji-Anime-Post-Timeskip-Infobox.png"
+        "image_url": "https://i.ibb.co/2NbS4bK/sanji.jpg"
     },
     {
         "name": "Jack",
@@ -240,7 +240,7 @@
         "bounties": [
             546000000
         ],
-        "image_url": "https://i.ibb.co/44t100g/Who-s-Who-Anime-Infobox.png"
+        "image_url": "https://i.ibb.co/2Z1HbNx/who-s-who.jpg"
     },
     {
         "name": "Chinjao",
@@ -537,7 +537,7 @@
         "bounties": [
             120000000
         ],
-        "image_url": "https://i.ibb.co/G7NPKZr/Charlotte-Mont-d-Or-Anime-Infobox.png"
+        "image_url": "https://i.ibb.co/NF5MFCZ/Charlotte-Mont-d-Or.jpg"
     },
     {
         "name": "Urouge",
@@ -887,14 +887,14 @@
         "bounties": [
             20000000
         ],
-        "image_url": "https://i.ibb.co/56rX7qB/Yeti-Cool-Brothers-Anime-Infobox.png"
+        "image_url": "https://i.ibb.co/0CTSh5H/rick-yeti.jpg"
     },
     {
         "name": "Scotch (Yeti)",
         "bounties": [
             20000000
         ],
-        "image_url": "https://i.ibb.co/56rX7qB/Yeti-Cool-Brothers-Anime-Infobox.png"
+        "image_url": "https://i.ibb.co/TvJgwbC/scotch-yeti.jpg"
     },
     {
         "name": "Krieg",
@@ -1093,7 +1093,7 @@
         "bounties": [
             null
         ],
-        "image_url": "https://i.ibb.co/rHW7dr2/Aladine-Anime-Infobox.png"
+        "image_url": "https://i.ibb.co/vwBzYfH/alladin.jpg"
     },
     {
         "name": "Avalo Pizarro",
@@ -1248,5 +1248,13 @@
             null
         ],
         "image_url": "https://i.ibb.co/4V6b8W8/Zeff-img.jpg"
+    }
+    ,
+    {
+        "name": "Loki",
+        "bounties": [
+            2600000000
+        ],
+        "image_url": "https://i.ibb.co/fHJXFHX/loki.jpg"
     }
 ]

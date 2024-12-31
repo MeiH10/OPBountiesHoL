@@ -1,91 +1,153 @@
 import React, { useState, useEffect } from 'react';
 import GameScreen from './GameScreen';
 import GameOverScreen from './GameOverScreen';
+import HowToPlay from './HowToPlay';
 import { Character } from './types';
-import characterData from './one_piece_bounties.json';
+import characterData from '../../data/one_piece_bounties.json';
+
+// simple hash for score validation
+const hashScore = (score: number): string => {
+  const salt = "op_bounties_v1";
+  return btoa(`${score}:${salt}`);
+};
+
+const verifyScore = (score: string, hash: string): boolean => {
+  try {
+    const storedScore = parseInt(score);
+    return hash === hashScore(storedScore);
+  } catch {
+    return false;
+  }
+};
+
+// preload some images
+const preloadImages = (characters: Character[], startIndex: number, batchSize: number = 5) => {
+  const endIndex = Math.min(startIndex + batchSize, characters.length);
+  for (let i = startIndex; i < endIndex; i++) {
+    const img = new Image();
+    img.src = characters[i].image_url;
+  }
+};
 
 const App: React.FC = () => {
-  const [characters, setCharacters] = useState<Character[]>([]);
-  const [currentCharacter, setCurrentCharacter] = useState<Character | null>(null);
-  const [nextCharacter, setNextCharacter] = useState<Character | null>(null);
+  const [indices, setIndices] = useState<number[]>([]);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [score, setScore] = useState<number>(0);
   const [highestScore, setHighestScore] = useState<number>(0);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
 
+  // filter valid characters
+  const validCharacters = characterData.filter(character =>
+    character.bounties && character.bounties[0] !== null
+  );
+
   useEffect(() => {
     const savedHighestScore = localStorage.getItem('highestScore');
-    if (!savedHighestScore) {
+    const savedHash = localStorage.getItem('highestScoreHash');
+
+    if (!savedHighestScore || !savedHash || !verifyScore(savedHighestScore, savedHash)) {
+      // if no score exists or validation fails, reset to 0
       localStorage.setItem('highestScore', '0');
+      localStorage.setItem('highestScoreHash', hashScore(0));
+      setHighestScore(0);
+    } else {
+      setHighestScore(parseInt(savedHighestScore, 10));
     }
-    setHighestScore(parseInt(savedHighestScore || '0', 10));
-    
-    const filteredCharacters = characterData.filter(character => character.bounties && character.bounties[0] !== null);
-    const shuffledCharacters = shuffleCharacters([...filteredCharacters]);
-    setCharacters(shuffledCharacters);
-    setCurrentCharacter(shuffledCharacters[0]);
-    setNextCharacter(shuffledCharacters[1]);
+
+    const shuffledIndices = [...Array(validCharacters.length).keys()]
+      .sort(() => Math.random() - 0.5);
+    setIndices(shuffledIndices);
+    setCurrentIndex(0);
+
+    // preload first batch
+    const firstBatchCharacters = shuffledIndices
+      .slice(0, 5)
+      .map(i => validCharacters[i]);
+    preloadImages(firstBatchCharacters, 0);
   }, []);
 
   const handleGuess = (guess: 'higher' | 'lower') => {
+    const currentCharacter = validCharacters[indices[currentIndex]];
+    const nextCharacter = validCharacters[indices[currentIndex + 1]];
+    
     if (!currentCharacter || !nextCharacter) return;
-  
+
     const currentBounty = currentCharacter.bounties[0];
     const nextBounty = nextCharacter.bounties[0];
-  
+
     if (currentBounty === nextBounty) {
       setScore(score + 1);
-      moveToNextCharacter();
+      moveToNext();
     } else {
       const isCorrect =
         guess === 'higher'
           ? nextBounty! > currentBounty!
           : nextBounty! < currentBounty!;
-  
+
       if (isCorrect) {
         setScore(score + 1);
-        moveToNextCharacter();
+        moveToNext();
       } else {
         setIsGameOver(true);
       }
     }
   };
-  
-  const moveToNextCharacter = () => {
-    if (!nextCharacter) return;
-    const newIndex = characters.indexOf(nextCharacter) + 1;
 
-    if (newIndex < characters.length) {
-      setCurrentCharacter(nextCharacter);
-      setNextCharacter(characters[newIndex]);
+  const moveToNext = () => {
+    const nextIndex = currentIndex + 1;
+    if (nextIndex < indices.length - 1) {
+      setCurrentIndex(nextIndex);
+      // preload next batch
+      const nextBatchCharacters = indices
+        .slice(nextIndex + 1, nextIndex + 6)
+        .map(i => validCharacters[i]);
+      preloadImages(nextBatchCharacters, 0);
     } else {
       resetGame();
     }
   };
 
-
   const resetGame = () => {
     if (score > highestScore) {
       setHighestScore(score);
       localStorage.setItem('highestScore', score.toString());
+      localStorage.setItem('highestScoreHash', hashScore(score));
     }
-  
-    const filteredCharacters = characterData.filter(character => character.bounties && character.bounties[0] !== null);
-    const shuffledCharacters = shuffleCharacters([...filteredCharacters]);
-    setCharacters(shuffledCharacters);
-    setCurrentCharacter(shuffledCharacters[0]);
-    setNextCharacter(shuffledCharacters[1]);
+
+    const shuffledIndices = [...Array(validCharacters.length).keys()]
+      .sort(() => Math.random() - 0.5);
+    setIndices(shuffledIndices);
+    setCurrentIndex(0);
+
+    const firstBatchCharacters = shuffledIndices
+      .slice(0, 5)
+      .map(i => validCharacters[i]);
+    preloadImages(firstBatchCharacters, 0);
     setScore(0);
     setIsGameOver(false);
   };
-  
+
   if (isGameOver) {
-    return <GameOverScreen score={score} onRestart={resetGame} />;
+    const currentCharacter = validCharacters[indices[currentIndex]];
+    const nextCharacter = validCharacters[indices[currentIndex + 1]];
+    return (
+      <GameOverScreen 
+        score={score} 
+        onRestart={resetGame}
+        currentCharacter={currentCharacter}
+        nextCharacter={nextCharacter}
+      />
+    );
   }
+
+  const currentCharacter = validCharacters[indices[currentIndex]];
+  const nextCharacter = validCharacters[indices[currentIndex + 1]];
 
   if (!currentCharacter || !nextCharacter) return null;
 
   return (
     <div>
+      <HowToPlay />
       <GameScreen
         currentCharacter={currentCharacter}
         nextCharacter={nextCharacter}
@@ -98,9 +160,5 @@ const App: React.FC = () => {
     </div>
   );
 };
-
-function shuffleCharacters(array: Character[]): Character[] {
-  return array.sort(() => Math.random() - 0.5);
-}
 
 export default App;
