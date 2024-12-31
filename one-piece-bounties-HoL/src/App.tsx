@@ -5,6 +5,9 @@ import HowToPlay from './HowToPlay';
 import { Character } from './types';
 import characterData from '../../data/one_piece_bounties.json';
 
+const SCORE_KEY = 'op_bounties_highest_score';
+const HASH_KEY = 'op_bounties_score_hash';
+
 // simple hash for score validation
 const hashScore = (score: number): string => {
   const salt = "op_bounties_v1";
@@ -42,18 +45,20 @@ const App: React.FC = () => {
   );
 
   useEffect(() => {
-    const savedHighestScore = localStorage.getItem('highestScore');
-    const savedHash = localStorage.getItem('highestScoreHash');
+    // load saved scoren
+    try {
+      const savedScore = localStorage.getItem(SCORE_KEY);
+      const savedHash = localStorage.getItem(HASH_KEY);
 
-    if (!savedHighestScore || !savedHash || !verifyScore(savedHighestScore, savedHash)) {
-      // if no score exists or validation fails, reset to 0
-      localStorage.setItem('highestScore', '0');
-      localStorage.setItem('highestScoreHash', hashScore(0));
-      setHighestScore(0);
-    } else {
-      setHighestScore(parseInt(savedHighestScore, 10));
+      if (savedScore && savedHash && verifyScore(savedScore, savedHash)) {
+        setHighestScore(parseInt(savedScore, 10));
+      } else {
+        localStorage.setItem(SCORE_KEY, '0');
+        localStorage.setItem(HASH_KEY, hashScore(0));
+      }
+    } catch {
     }
-
+    
     const shuffledIndices = [...Array(validCharacters.length).keys()]
       .sort(() => Math.random() - 0.5);
     setIndices(shuffledIndices);
@@ -109,9 +114,14 @@ const App: React.FC = () => {
 
   const resetGame = () => {
     if (score > highestScore) {
-      setHighestScore(score);
-      localStorage.setItem('highestScore', score.toString());
-      localStorage.setItem('highestScoreHash', hashScore(score));
+      try {
+        localStorage.setItem(SCORE_KEY, score.toString());
+        localStorage.setItem(HASH_KEY, hashScore(score));
+        setHighestScore(score);
+      } catch {
+        // if storage fails, just update the in memory score
+        setHighestScore(score);
+      }
     }
 
     const shuffledIndices = [...Array(validCharacters.length).keys()]
