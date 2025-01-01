@@ -44,8 +44,20 @@ const App: React.FC = () => {
     character.bounties && character.bounties[0] !== null
   );
 
+  const updateHighScore = (newScore: number) => {
+    if (newScore > highestScore) {
+      try {
+        localStorage.setItem(SCORE_KEY, newScore.toString());
+        localStorage.setItem(HASH_KEY, hashScore(newScore));
+        setHighestScore(newScore);
+      } catch {
+        setHighestScore(newScore);
+      }
+    }
+  };
+
   useEffect(() => {
-    // load saved scoren
+    // Load saved score
     try {
       const savedScore = localStorage.getItem(SCORE_KEY);
       const savedHash = localStorage.getItem(HASH_KEY);
@@ -81,7 +93,9 @@ const App: React.FC = () => {
     const nextBounty = nextCharacter.bounties[0];
 
     if (currentBounty === nextBounty) {
-      setScore(score + 1);
+      const newScore = score + 1;
+      setScore(newScore);
+      updateHighScore(newScore);
       moveToNext();
     } else {
       const isCorrect =
@@ -90,9 +104,12 @@ const App: React.FC = () => {
           : nextBounty! < currentBounty!;
 
       if (isCorrect) {
-        setScore(score + 1);
+        const newScore = score + 1;
+        setScore(newScore);
+        updateHighScore(newScore);
         moveToNext();
       } else {
+        updateHighScore(score);
         setIsGameOver(true);
       }
     }
@@ -113,17 +130,6 @@ const App: React.FC = () => {
   };
 
   const resetGame = () => {
-    if (score > highestScore) {
-      try {
-        localStorage.setItem(SCORE_KEY, score.toString());
-        localStorage.setItem(HASH_KEY, hashScore(score));
-        setHighestScore(score);
-      } catch {
-        // if storage fails, just update the in memory score
-        setHighestScore(score);
-      }
-    }
-
     const shuffledIndices = [...Array(validCharacters.length).keys()]
       .sort(() => Math.random() - 0.5);
     setIndices(shuffledIndices);
